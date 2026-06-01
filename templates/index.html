@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>My Notes</h1>
+        <form method="post"> 
+            <label for="title">Title:</label>
+            <input type="text" name="title" id="title" placeholder="Note title" required>
+
+            <label for="content">Content:</label>
+            <input type="text" name="content" id="content" placeholder="Note content" required>
+
+            <label for="category">Category:</label>
+            <input type="text" name="category" id="category" placeholder="Note category">
+
+            <label for="pinned">
+                <input type="checkbox" name="pinned" id="pinned">
+                Pinned
+            </label>
+            <button type="submit">Add</button>
+        </form>
+        <form method="GET" action="{{ url_for('home') }}" class="search-form">
+             <input type="text" name="search" id="search" placeholder="Search notes..." value="{{ search_query or '' }}">
+             <button type="submit">Search</button>
+             {% if search_query %}
+                 <a class="clear-search" href="{{ url_for('home') }}">Show all notes <- </a>
+             {% endif %}
+        </form>
+        {% if search_query and not notes %}
+            <p class="no-results">No notes matched “{{ search_query }}”. <a href="{{ url_for('home') }}">Show all notes</a></p>
+        {% endif %}
+
+        <div class="notes-container">
+           {% for note in notes %}
+             <div class="cards">
+                <div class="note {% if note.pinned %}pinned{% endif %}">
+                <h2>{{ note.title }}</h2>
+                <p>{{ note.content }}</p>
+                {% if note.category %}
+                    <span class="category">{{ note.category }}</span>
+                {% endif %}
+                </div>
+                    <a href ="{{ url_for('edit_note', note_id=note.id) }}" class="edit">Edit</a>
+                    <a href="{{ url_for('delete_note', note_id=note.id) }}" class="delete">Delete</a>
+             </div>
+           {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
